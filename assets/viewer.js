@@ -1,5 +1,6 @@
 // Görüntüleyici: GIF/foto içeriğini tam sayfa gösterir. İçerik adı üstte,
-// içerik altta tam alanda. Paylaşılabilir bağlantı ve tam ekran desteği.
+// içerik altta tam alanda. Ok tuşlarıyla (→ sonraki, ← önceki) aynı kategori
+// içinde gezinilebilir. Paylaşılabilir bağlantı ve tam ekran desteği.
 (function () {
   "use strict";
 
@@ -67,49 +68,77 @@
   if (catPrefix === "gif") backLink.href = "gif.html";
   else if (catPrefix === "foto") backLink.href = "foto.html";
 
-  const mediaPath = "arsiv/" + file;
-
-  let displayTitle = titleFromFilename(file);
-  titleEl.textContent = displayTitle;
-  document.title = displayTitle + " — Türk İnternet Arkeolojisi";
-
-  // Manifestten daha iyi başlık varsa kullan
-  function getManifest() {
-    if (window.ARSIV_MANIFEST) return Promise.resolve(window.ARSIV_MANIFEST);
-    return fetch("manifest.json", { cache: "no-cache" }).then((r) =>
-      r.ok ? r.json() : null
-    );
-  }
-  getManifest()
-    .then((data) => {
-      if (!data || !data.categories) return;
-      for (const key in data.categories) {
-        const match = (data.categories[key].items || []).find(
-          (it) => it.file === file
-        );
-        if (match && match.title) {
-          displayTitle = match.title;
-          titleEl.textContent = displayTitle;
-          document.title = displayTitle + " — Türk İnternet Arkeolojisi";
-          break;
-        }
+  // Başlığı (varsa) manifestten al, yoksa dosya adından üret.
+  function titleFor(f) {
+    const m = window.ARSIV_MANIFEST;
+    if (m && m.categories) {
+      for (const key in m.categories) {
+        const match = (m.categories[key].items || []).find((it) => it.file === f);
+        if (match && match.title) return match.title;
       }
-    })
-    .catch(() => {});
+    }
+    return titleFromFilename(f);
+  }
 
-  // Görseli yükle
+  // Aynı kategorideki komşu içerik; başa/sona gelince döner.
+  function neighbor(f, dir) {
+    const m = window.ARSIV_MANIFEST;
+    const cat = m && m.categories && m.categories[catPrefix];
+    const items = (cat && cat.items) || [];
+    if (items.length < 2) return null;
+    const i = items.findIndex((it) => it.file === f);
+    if (i < 0) return null;
+    const n = items.length;
+    return items[(i + dir + n) % n];
+  }
+
   const img = document.createElement("img");
   img.className = "media";
-  img.alt = displayTitle;
   img.decoding = "async";
   img.addEventListener("load", hideMessage);
   img.addEventListener("error", function () {
-    showMessage(
-      '<div style="font-size:2rem">⚠️</div><div>İçerik yüklenemedi.</div>'
-    );
+    showMessage('<div style="font-size:2rem">⚠️</div><div>İçerik yüklenemedi.</div>');
   });
-  img.src = mediaPath;
   stage.appendChild(img);
+
+  let displayTitle = "";
+  let pageUrl = window.location.href;
+
+  function applyFile(f) {
+    file = f;
+    displayTitle = titleFor(f);
+    titleEl.textContent = displayTitle;
+    document.title = displayTitle + " — Türk İnternet Arkeolojisi";
+    img.alt = displayTitle;
+    showMessage('<div class="spinner"></div><div>İçerik yükleniyor…</div>');
+    img.src = "arsiv/" + f;
+    try {
+      history.replaceState(null, "", location.pathname + "?file=" + encodeURIComponent(f));
+    } catch (_) {}
+    pageUrl = window.location.href;
+    shareUrl.value = pageUrl;
+    shareRow.classList.remove("open");
+  }
+
+  function navigate(dir) {
+    const nx = neighbor(file, dir);
+    if (nx) applyFile(nx.file);
+  }
+
+  applyFile(file);
+
+  // ---- Ok tuşlarıyla gezinme ----
+  document.addEventListener("keydown", function (e) {
+    const t = e.target;
+    if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA")) return;
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      navigate(1);
+    } else if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      navigate(-1);
+    }
+  });
 
   // ---- Kontroller ----
   fsBtn.addEventListener("click", function () {
@@ -126,9 +155,6 @@
     toast.classList.add("show");
     setTimeout(() => toast.classList.remove("show"), 1800);
   }
-
-  const pageUrl = window.location.href;
-  shareUrl.value = pageUrl;
 
   shareBtn.addEventListener("click", async function () {
     if (navigator.share) {

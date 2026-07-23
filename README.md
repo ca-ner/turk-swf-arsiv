@@ -52,6 +52,9 @@ kısıtlaması olan yerel `file://` açılışlarında bile çalışır. Manifes
   kullanıcı etkileşimi sayıldığı için **ses de anında başlar** (tarayıcılar
   sesli otomatik oynatmayı yalnızca bir etkileşimden sonra izin verir).
 - 🎲 **Rastgele!** — ana sayfadaki düğme, tüm arşivlerden rastgele bir içeriği açar.
+- ⌨️ **Ok tuşlarıyla gezinme** — bir içeriği izlerken **→** sonraki, **←** önceki
+  içeriğe geçer (aynı kategori içinde; başa/sona gelince döner). SWF modalinde,
+  GIF/Foto görüntüleyicisinde ve paylaşılan oynatıcı sayfasında geçerlidir.
 - 🎞️ **GIF & Foto** — görseller tam sayfa görüntülenir; GIF'ler doğal olarak döner.
 - 📱 **Responsive & mobil uyumlu** — içerik adı en üstte, içerik tam sayfa altta.
 - 🔗 **Bağımsız paylaşım** — her içeriğin kendi bağlantısı vardır, tek tek

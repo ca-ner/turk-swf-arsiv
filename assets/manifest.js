@@ -1,6 +1,6 @@
 // Otomatik üretildi — elle düzenlemeyin. Kaynak: scripts/generate-manifest.mjs
 window.ARSIV_MANIFEST = {
-  "generatedAt": "2026-07-23T15:11:25.855Z",
+  "generatedAt": "2026-07-23T16:42:42.430Z",
   "categories": {
     "swf": {
       "key": "swf",
@@ -511,7 +511,7 @@ window.ARSIV_MANIFEST = {
       "key": "gif",
       "label": "GIF",
       "kind": "image",
-      "count": 1,
+      "count": 2,
       "items": [
         {
           "file": "gif/ornek_animasyon.gif",
@@ -519,6 +519,13 @@ window.ARSIV_MANIFEST = {
           "title": "Ornek Animasyon",
           "description": "",
           "size": 3659
+        },
+        {
+          "file": "gif/ornek_seritler.gif",
+          "path": "arsiv/gif/ornek_seritler.gif",
+          "title": "Ornek Seritler",
+          "description": "",
+          "size": 3557
         }
       ]
     },
@@ -526,8 +533,15 @@ window.ARSIV_MANIFEST = {
       "key": "foto",
       "label": "Foto",
       "kind": "image",
-      "count": 1,
+      "count": 2,
       "items": [
+        {
+          "file": "foto/ornek_desen.png",
+          "path": "arsiv/foto/ornek_desen.png",
+          "title": "Ornek Desen",
+          "description": "",
+          "size": 24920
+        },
         {
           "file": "foto/ornek_foto.png",
           "path": "arsiv/foto/ornek_foto.png",

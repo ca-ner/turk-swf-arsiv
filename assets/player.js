@@ -56,35 +56,37 @@
     return;
   }
 
-  const swfPath = "arsiv/" + file;
-  let displayTitle = titleFromFilename(file);
+  // Başlığı manifestten al (varsa), yoksa dosya adından üret.
+  function titleFor(f) {
+    const m = window.ARSIV_MANIFEST;
+    const cat = m && m.categories && m.categories.swf;
+    if (cat && Array.isArray(cat.items)) {
+      const match = cat.items.find((it) => it.file === f);
+      if (match && match.title) return match.title;
+    }
+    return titleFromFilename(f);
+  }
+
+  // Aynı kategorideki (swf) komşu içerik; başa/sona gelince döner.
+  function neighbor(f, dir) {
+    const m = window.ARSIV_MANIFEST;
+    const cat = m && m.categories && m.categories.swf;
+    const items = (cat && cat.items) || [];
+    if (items.length < 2) return null;
+    const i = items.findIndex((it) => it.file === f);
+    if (i < 0) return null;
+    const n = items.length;
+    return items[(i + dir + n) % n];
+  }
+
+  let displayTitle = titleFor(file);
   titleEl.textContent = displayTitle;
   document.title = displayTitle + " — SWF Arşivi";
-
-  // Manifestten daha iyi bir başlık varsa onu kullan (varsa).
-  function getManifest() {
-    if (window.ARSIV_MANIFEST) return Promise.resolve(window.ARSIV_MANIFEST);
-    return fetch("manifest.json", { cache: "no-cache" }).then((r) =>
-      r.ok ? r.json() : null
-    );
-  }
-  getManifest()
-    .then((data) => {
-      const cat = data && data.categories && data.categories.swf;
-      if (!cat || !Array.isArray(cat.items)) return;
-      const match = cat.items.find((it) => it.file === file);
-      if (match && match.title) {
-        displayTitle = match.title;
-        titleEl.textContent = displayTitle;
-        document.title = displayTitle + " — SWF Arşivi";
-      }
-    })
-    .catch(() => {});
 
   // ---- Ruffle oynatıcı ----
   let player = null;
   const loadOptions = {
-    url: swfPath,
+    url: "arsiv/" + file,
     autoplay: "on",
     // Ana zaman çizelgesi Flash'ta varsayılan olarak döngüde döner.
     letterbox: "on", // içeriği en-boy oranını koruyarak tam alana yerleştir
@@ -112,7 +114,28 @@
 
     player.addEventListener("loadedmetadata", hideMessage);
 
+    setFile(file);
+  }
+
+  // Farklı bir SWF'e (ok tuşuyla) geçiş: içeriği yerinde değiştirir.
+  function setFile(f) {
+    file = f;
+    displayTitle = titleFor(f);
+    titleEl.textContent = displayTitle;
+    document.title = displayTitle + " — SWF Arşivi";
+    loadOptions.url = "arsiv/" + f;
+    try {
+      history.replaceState(null, "", location.pathname + "?file=" + encodeURIComponent(f));
+    } catch (_) {}
+    pageUrl = window.location.href;
+    shareUrl.value = pageUrl;
+    shareRow.classList.remove("open");
     load();
+  }
+
+  function navigate(dir) {
+    const nx = neighbor(file, dir);
+    if (nx) setFile(nx.file);
   }
 
   function load() {
@@ -163,8 +186,21 @@
     setTimeout(() => toast.classList.remove("show"), 1800);
   }
 
-  const pageUrl = window.location.href;
+  let pageUrl = window.location.href;
   shareUrl.value = pageUrl;
+
+  // ---- Ok tuşlarıyla gezinme (→ sonraki, ← önceki) ----
+  document.addEventListener("keydown", function (e) {
+    const t = e.target;
+    if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA")) return;
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      navigate(1);
+    } else if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      navigate(-1);
+    }
+  });
 
   shareBtn.addEventListener("click", async function () {
     if (navigator.share) {

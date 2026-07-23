@@ -47,10 +47,37 @@
     });
 
     document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && overlay.classList.contains("open")) close();
+      if (!overlay.classList.contains("open")) return;
+      const t = e.target;
+      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA")) return;
+      if (e.key === "Escape") close();
+      else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        step(1);
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        step(-1);
+      }
     });
 
     return overlay;
+  }
+
+  // Aynı kategorideki (swf) komşu içeriği bulur; başa/sona gelince döner.
+  function neighbor(file, dir) {
+    const m = window.ARSIV_MANIFEST;
+    const cat = m && m.categories && m.categories.swf;
+    const items = (cat && cat.items) || [];
+    if (items.length < 2) return null;
+    const i = items.findIndex((it) => it.file === file);
+    if (i < 0) return null;
+    const n = items.length;
+    return items[(i + dir + n) % n];
+  }
+
+  function step(dir) {
+    const nx = neighbor(currentFile, dir);
+    if (nx) open(nx.file, nx.title);
   }
 
   function toast(text) {

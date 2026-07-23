@@ -33,7 +33,10 @@
   function titleFromFilename(name) {
     const base = name.replace(/^.*[\\/]/, "").replace(/\.swf$/i, "");
     const spaced = base.replace(/[._-]+/g, " ").replace(/\s+/g, " ").trim();
-    return spaced.replace(/\b\w/g, (c) => c.toLocaleUpperCase("tr-TR"));
+    return spaced
+      .split(" ")
+      .map((w) => (w ? w[0].toLocaleUpperCase("tr-TR") + w.slice(1) : w))
+      .join(" ");
   }
 
   function showMessage(html) {
@@ -60,11 +63,12 @@
   document.title = displayTitle + " — SWF Arşivi";
 
   // Manifestten daha iyi bir başlık varsa onu kullan (varsa).
-  fetch("swfs.json", { cache: "no-cache" })
+  fetch("manifest.json", { cache: "no-cache" })
     .then((r) => (r.ok ? r.json() : null))
     .then((data) => {
-      if (!data || !Array.isArray(data.items)) return;
-      const match = data.items.find((it) => it.file === file);
+      const cat = data && data.categories && data.categories.swf;
+      if (!cat || !Array.isArray(cat.items)) return;
+      const match = cat.items.find((it) => it.file === file);
       if (match && match.title) {
         displayTitle = match.title;
         titleEl.textContent = displayTitle;

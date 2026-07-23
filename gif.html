@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>GIF Arşivi — Caner ile Türk İnternet Arkeolojisi</title>
+    <meta name="description" content="Eski hareketli GIF koleksiyonu — sonsuz döngüde." />
+    <meta name="theme-color" content="#0f1115" />
+    <link rel="stylesheet" href="assets/style.css" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%9E%3C/text%3E%3C/svg%3E"
+    />
+  </head>
+  <body data-category="gif">
+    <header class="site-header">
+      <div class="container">
+        <div class="brandline">
+          <a class="home-link" href="index.html"><span aria-hidden="true">←</span> Arşiv</a>
+        </div>
+        <h1 style="margin-top: 10px"><span class="flash">🎞️</span> GIF Arşivi</h1>
+        <p>Hareketli GIF'ler — sonsuz döngüde, olduğu gibi.</p>
+      </div>
+    </header>
+
+    <main class="container">
+      <div class="toolbar">
+        <div class="search">
+          <input id="search" type="search" placeholder="GIF arşivinde ara…" autocomplete="off" aria-label="Ara" />
+        </div>
+        <span class="count-pill" id="count"></span>
+      </div>
+
+      <div class="grid" id="grid" hidden></div>
+
+      <div class="empty" id="empty" hidden>
+        <h2>Henüz içerik yok</h2>
+        <p><code>arsiv/gif/</code> klasörüne <code>.gif</code> dosyaları ekleyin; liste otomatik güncellenir.</p>
+      </div>
+
+      <div class="empty" id="error" hidden>
+        <h2>Liste yüklenemedi</h2>
+        <p><code>manifest.json</code> bulunamadı. <code>node scripts/generate-manifest.mjs</code> komutunu çalıştırın.</p>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">Statik olarak GitHub Pages üzerinde çalışır.</div>
+    </footer>
+
+    <script src="assets/gallery.js" defer></script>
+  </body>
+</html>

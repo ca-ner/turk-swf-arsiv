@@ -1,59 +1,80 @@
-# SWF Arşivi ⚡
+# Caner ile Türk İnternet Arkeolojisi ⚡
 
-Eski **Flash (SWF)** içeriklerini, herhangi bir eklenti veya arka planda çalışan
-bir sunucu gerektirmeden, doğrudan tarayıcıda yeniden oynatan **statik** bir web
-arşivi. GitHub Pages üzerinde olduğu gibi yayınlanabilir.
+Eski Türk internet kültürünün dijital arşivi. **Flash (SWF)** animasyonları,
+**GIF**'ler ve **fotoğraflar** — hepsi tarayıcıda, herhangi bir eklenti veya
+arka planda çalışan bir sunucu gerektirmeden. GitHub Pages üzerinde olduğu gibi
+statik olarak yayınlanabilir.
 
-Oynatma motoru olarak [**Ruffle**](https://ruffle.rs) (WebAssembly tabanlı açık
-kaynak Flash Player emülatörü) kullanılır ve `ruffle/` klasöründe **kendi
-sunucumuzda barındırılır** — yani harici bir CDN'e bağımlı değildir, tamamen
-kendi kendine yeterlidir.
+SWF içerikleri için oynatma motoru olarak
+[**Ruffle**](https://ruffle.rs) (WebAssembly tabanlı açık kaynak Flash Player
+emülatörü) kullanılır ve `ruffle/` klasöründe **kendi sunucumuzda barındırılır**
+— harici bir CDN'e bağımlı değildir.
 
-## Özellikler
+## Yapı
 
-- 📼 **Eklentisiz oynatma** — modern tarayıcılarda, masaüstü ve mobilde çalışır.
-- 🔁 **Döngü** — Flash ana zaman çizelgesi varsayılan olarak döngüde döner;
-  ayrıca "Baştan" düğmesiyle içeriği istediğiniz an yeniden başlatabilirsiniz.
-- 📱 **Responsive & mobil uyumlu** — içerik adı en üstte, içerik tam sayfa altta.
-- 🔗 **Bağımsız paylaşım** — her SWF'in kendi bağlantısı vardır
-  (`player.html?file=...`), tek tek paylaşılabilir.
-- 🗂️ **Otomatik liste** — `arsiv/` klasörüne dosya ekleyip gönderdiğinizde
-  liste (galeri) otomatik güncellenir.
+Site iki katmanlıdır:
 
-## Nasıl çalışır?
+1. **Ana sayfa** (`index.html`) — kategori seçimi: **SWF**, **GIF**, **Foto**.
+2. **Kategori galerileri** — her kategori kendi galerisine sahiptir ve içeriği
+   ayrı bir klasörden okur.
 
 ```
-index.html          Galeri — tüm SWF'lerin listesi
-player.html         Tekil oynatıcı (?file=<dosya> ile)
+index.html          Ana sayfa (kategori seçimi)
+swf.html            SWF galerisi        →  arsiv/swf/
+gif.html            GIF galerisi        →  arsiv/gif/
+foto.html           Foto galerisi       →  arsiv/foto/
+player.html         SWF oynatıcı (Ruffle)   ?file=swf/<dosya>
+viewer.html         GIF/Foto görüntüleyici  ?file=gif|foto/<dosya>
 assets/             CSS ve JavaScript
 ruffle/             Kendi sunucumuzda barındırılan Ruffle motoru (WASM)
-arsiv/              SWF dosyalarının bulunduğu klasör
-swfs.json           Otomatik üretilen içerik listesi (manifest)
+arsiv/
+  ├── swf/          .swf dosyaları
+  ├── gif/          .gif dosyaları
+  └── foto/         .jpg, .jpeg, .png, .webp, .avif, .bmp
+manifest.json       Otomatik üretilen içerik listesi (tüm kategoriler)
 scripts/            Manifest üreticisi
 .github/workflows/  GitHub Pages dağıtım iş akışı
 ```
 
-GitHub Pages statik olduğu için dizin listeleyemez. Bu yüzden `arsiv/` klasörü
-taranarak bir **`swfs.json`** manifesti üretilir; sayfa hangi SWF'lerin mevcut
-olduğunu bu dosyadan öğrenir. Manifest, her `push`'ta GitHub Actions tarafından
-otomatik yeniden oluşturulur.
+GitHub Pages statik olduğu için dizin listeleyemez. Bu yüzden `arsiv/` altındaki
+kategori klasörleri taranarak tek bir **`manifest.json`** üretilir; sayfalar
+hangi içeriklerin mevcut olduğunu bu dosyadan öğrenir. Manifest, her `push`'ta
+GitHub Actions tarafından otomatik yeniden oluşturulur.
 
-## Yeni SWF ekleme
+## Özellikler
 
-1. `.swf` dosyalarını `arsiv/` klasörüne koyun (alt klasörler de desteklenir).
+- 🗂️ **Kategoriler** — SWF, GIF ve Foto ayrı klasörlerde ve ayrı galerilerde.
+- 📼 **Eklentisiz Flash** — SWF'ler Ruffle ile, döngüde oynatılır.
+- 🎞️ **GIF & Foto** — görseller tam sayfa görüntülenir; GIF'ler doğal olarak döner.
+- 📱 **Responsive & mobil uyumlu** — içerik adı en üstte, içerik tam sayfa altta.
+- 🔗 **Bağımsız paylaşım** — her içeriğin kendi bağlantısı vardır, tek tek
+  paylaşılabilir (`player.html?file=…` veya `viewer.html?file=…`).
+- 🔎 **Arama** — her galeride içerik arama.
+- 🤖 **Otomatik liste** — ilgili klasöre dosya ekleyip gönderdiğinizde galeri
+  otomatik güncellenir.
+
+## Yeni içerik ekleme
+
+1. Dosyaları uygun klasöre koyun:
+   - Flash → `arsiv/swf/`
+   - GIF → `arsiv/gif/`
+   - Fotoğraf → `arsiv/foto/`
 2. Değişiklikleri commit'leyip `push`'layın.
-3. GitHub Actions manifesti yeniden üretir ve siteyi yayınlar. Galeri güncellenir.
+3. GitHub Actions manifesti (`manifest.json`) yeniden üretir ve siteyi
+   yayınlar. Galeriler güncellenir.
 
 ### (İsteğe bağlı) Başlık ve açıklama
 
-Dosya adından otomatik bir başlık üretilir (ör. `kirmizi_top.swf` → "Kirmizi Top").
-Daha güzel başlıklar için `arsiv/metadata.json` ekleyebilirsiniz:
+Dosya adından otomatik bir başlık üretilir (Türkçe karakterler korunur; ör.
+`bahçeli şile.swf` → "Bahçeli Şile"). Daha özel başlıklar için ilgili kategori
+klasörüne bir `metadata.json` ekleyebilirsiniz:
 
-```json
+```jsonc
+// arsiv/swf/metadata.json
 {
-  "kirmizi_top.swf": {
-    "title": "Kırmızı Top Oyunu",
-    "description": "2007 yapımı klasik bir mini oyun."
+  "bahçeli şile.swf": {
+    "title": "Bahçeli & Şile",
+    "description": "Klasik bir Flash animasyonu."
   }
 }
 ```
@@ -72,7 +93,7 @@ Daha güzel başlıklar için `arsiv/metadata.json` ekleyebilirsiniz:
 tipiyle sunulması gerekir):
 
 ```bash
-# Manifesti üret (yeni dosya eklediyseniz)
+# Yeni dosya eklediyseniz manifesti üretin
 node scripts/generate-manifest.mjs
 
 # Basit bir sunucu başlatın
@@ -80,7 +101,13 @@ python3 -m http.server 8099
 # Tarayıcıda: http://127.0.0.1:8099/
 ```
 
+## Örnek içerikler
+
+`arsiv/gif/` ve `arsiv/foto/` klasörlerinde birer örnek dosya (`ornek_*`)
+bulunur; bunlar galerilerin ve görüntüleyicinin çalıştığını göstermek içindir,
+istediğiniz zaman silebilirsiniz.
+
 ## Lisans / atıf
 
 - Ruffle: MIT / Apache-2.0 (bkz. `ruffle/LICENSE_MIT`, `ruffle/LICENSE_APACHE`).
-- Arşivdeki SWF içeriklerinin telif hakları ilgili sahiplerine aittir.
+- Arşivdeki içeriklerin telif hakları ilgili sahiplerine aittir.

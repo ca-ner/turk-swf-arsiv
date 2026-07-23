@@ -3,67 +3,87 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>SWF Arşivi — Flash İçerik Koleksiyonu</title>
+    <title>Caner ile Türk İnternet Arkeolojisi</title>
     <meta
       name="description"
-      content="Eski Flash (SWF) içeriklerini tarayıcıda, eklenti gerektirmeden oynatan statik arşiv."
+      content="Eski Türk internet kültürünün dijital arşivi: SWF (Flash), GIF ve fotoğraf koleksiyonları. Tarayıcıda, eklentisiz."
     />
     <meta name="theme-color" content="#0f1115" />
-    <meta property="og:title" content="SWF Arşivi" />
-    <meta property="og:description" content="Eski Flash içeriklerini tarayıcıda yeniden oynatın." />
+    <meta property="og:title" content="Caner ile Türk İnternet Arkeolojisi" />
+    <meta
+      property="og:description"
+      content="Eski Türk internet kültürünün dijital arşivi: SWF, GIF ve fotoğraf."
+    />
     <meta property="og:type" content="website" />
     <link rel="stylesheet" href="assets/style.css" />
     <link
       rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%92%BE%3C/text%3E%3C/svg%3E"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%97%BF%3C/text%3E%3C/svg%3E"
     />
   </head>
   <body>
-    <header class="site-header">
-      <div class="container">
-        <h1><span class="flash">⚡</span> SWF Arşivi</h1>
-        <p>Eski Flash içeriklerini tarayıcıda, eklenti olmadan yeniden oynatın.</p>
-      </div>
+    <header class="home-hero">
+      <p class="kicker">Dijital Arşiv</p>
+      <h1><span class="name">Caner</span> ile Türk İnternet Arkeolojisi</h1>
+      <p>
+        Eski Türk internet kültürünün izlerini bir araya getiren arşiv. Flash
+        animasyonlar, GIF'ler ve fotoğraflar — hepsi tarayıcıda, eklenti
+        gerektirmeden.
+      </p>
     </header>
 
     <main class="container">
-      <div class="toolbar">
-        <div class="search">
-          <input
-            id="search"
-            type="search"
-            placeholder="Arşivde ara…"
-            autocomplete="off"
-            aria-label="Arşivde ara"
-          />
-        </div>
-        <span class="count-pill" id="count"></span>
-      </div>
+      <div class="category-grid">
+        <a class="category-card" href="swf.html" id="cat-swf">
+          <span class="arrow" aria-hidden="true">→</span>
+          <span class="ico" aria-hidden="true">📼</span>
+          <span class="cat-title">SWF</span>
+          <span class="cat-desc">Flash animasyonları ve mini oyunlar. Ruffle ile döngüde oynatılır.</span>
+          <span class="cat-count" data-count="swf">—</span>
+        </a>
 
-      <div class="grid" id="grid" hidden></div>
+        <a class="category-card" href="gif.html" id="cat-gif">
+          <span class="arrow" aria-hidden="true">→</span>
+          <span class="ico" aria-hidden="true">🎞️</span>
+          <span class="cat-title">GIF</span>
+          <span class="cat-desc">Hareketli GIF'ler — sonsuz döngüde, olduğu gibi.</span>
+          <span class="cat-count" data-count="gif">—</span>
+        </a>
 
-      <div class="empty" id="empty" hidden>
-        <h2>Henüz içerik yok</h2>
-        <p>
-          <code>arsiv/</code> klasörüne <code>.swf</code> dosyalarını ekleyin,
-          değişiklikleri gönderin; liste otomatik güncellenir.
-        </p>
-      </div>
-
-      <div class="empty" id="error" hidden>
-        <h2>Liste yüklenemedi</h2>
-        <p><code>swfs.json</code> bulunamadı. Manifesti oluşturmak için
-          <code>node scripts/generate-manifest.mjs</code> komutunu çalıştırın.</p>
+        <a class="category-card" href="foto.html" id="cat-foto">
+          <span class="arrow" aria-hidden="true">→</span>
+          <span class="ico" aria-hidden="true">🖼️</span>
+          <span class="cat-title">Foto</span>
+          <span class="cat-desc">Dönemin fotoğrafları, ekran görüntüleri ve görselleri.</span>
+          <span class="cat-count" data-count="foto">—</span>
+        </a>
       </div>
     </main>
 
     <footer class="site-footer">
       <div class="container">
-        Oynatma motoru: <a href="https://ruffle.rs" rel="noopener" target="_blank">Ruffle</a>
-        (kendi sunucumuzda barındırılıyor) · Statik olarak GitHub Pages üzerinde çalışır.
+        Statik olarak GitHub Pages üzerinde çalışır · Flash içerikler için oynatma
+        motoru: <a href="https://ruffle.rs" rel="noopener" target="_blank">Ruffle</a>.
       </div>
     </footer>
 
-    <script src="assets/gallery.js" defer></script>
+    <script>
+      // Kategori sayaçlarını manifestten doldur
+      fetch("manifest.json", { cache: "no-cache" })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((m) => {
+          if (!m || !m.categories) return;
+          document.querySelectorAll("[data-count]").forEach((el) => {
+            const cat = m.categories[el.getAttribute("data-count")];
+            const n = cat ? cat.count : 0;
+            el.textContent = n + " içerik";
+          });
+        })
+        .catch(() => {
+          document
+            .querySelectorAll("[data-count]")
+            .forEach((el) => (el.textContent = ""));
+        });
+    </script>
   </body>
 </html>

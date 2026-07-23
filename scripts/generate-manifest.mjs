@@ -1,15 +1,14 @@
 #!/usr/bin/env node
 /*
- * arsiv/ klasörünü tarar ve içindeki tüm .swf dosyalarını listeleyen
- * bir "swfs.json" manifesti üretir. GitHub Pages statik olduğu için
- * dizin listelemesi yapamaz; bu manifest sayesinde web sayfası hangi
- * SWF dosyalarının mevcut olduğunu bilir.
+ * arsiv/ altındaki kategori klasörlerini (swf, gif, foto) tarar ve tek bir
+ * "manifest.json" dosyası üretir. GitHub Pages statik olduğu için dizin
+ * listeleyemez; sayfalar hangi içeriklerin mevcut olduğunu bu manifestten
+ * öğrenir.
  *
  * Kullanım:  node scripts/generate-manifest.mjs
  *
- * İsteğe bağlı meta veri:  arsiv/metadata.json dosyası varsa, dosya
- * adına göre başlık/açıklama gibi alanlar buradan okunur. Örnek:
- *   { "oyun.swf": { "title": "Süper Oyun", "description": "..." } }
+ * İsteğe bağlı meta veri: her kategori klasöründe bir "metadata.json" olabilir.
+ *   arsiv/swf/metadata.json  ->  { "dosya.swf": { "title": "...", "description": "..." } }
  */
 
 import { promises as fs } from "node:fs";
@@ -19,26 +18,42 @@ import { fileURLToPath } from "node:url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 const ARSIV_DIR = path.join(ROOT, "arsiv");
-const OUTPUT = path.join(ROOT, "swfs.json");
+const OUTPUT = path.join(ROOT, "manifest.json");
 
-// Dosya adından okunabilir bir başlık üretir: "kirmizi_top-2.swf" -> "Kirmizi Top 2"
+// Kategoriler ve kabul ettikleri uzantılar
+const CATEGORIES = [
+  { key: "swf", label: "SWF", kind: "swf", exts: [".swf"] },
+  { key: "gif", label: "GIF", kind: "image", exts: [".gif"] },
+  {
+    key: "foto",
+    label: "Foto",
+    kind: "image",
+    exts: [".jpg", ".jpeg", ".png", ".webp", ".avif", ".bmp"],
+  },
+];
+
+// Dosya adından okunabilir başlık: "kirmizi_top-2.swf" -> "Kirmizi Top 2"
+// (Türkçe karakterleri bozmadan her kelimenin ilk harfini büyütür.)
 function titleFromFilename(name) {
-  const base = name.replace(/\.swf$/i, "");
+  const base = name.replace(/\.[^.]+$/i, "");
   const spaced = base.replace(/[._-]+/g, " ").replace(/\s+/g, " ").trim();
-  return spaced.replace(/\b\w/g, (c) => c.toLocaleUpperCase("tr-TR"));
+  return spaced
+    .split(" ")
+    .map((w) => (w ? w[0].toLocaleUpperCase("tr-TR") + w.slice(1) : w))
+    .join(" ");
 }
 
-async function readMetadata() {
+async function readMetadata(dir) {
   try {
-    const raw = await fs.readFile(path.join(ARSIV_DIR, "metadata.json"), "utf8");
+    const raw = await fs.readFile(path.join(dir, "metadata.json"), "utf8");
     return JSON.parse(raw);
   } catch {
     return {};
   }
 }
 
-// arsiv/ altındaki tüm .swf dosyalarını (alt klasörler dahil) bulur.
-async function findSwfFiles(dir, baseDir) {
+// Bir klasördeki (alt klasörler dahil) belirtilen uzantılı dosyaları bulur.
+async function findFiles(dir, baseDir, exts) {
   const results = [];
   let entries;
   try {
@@ -49,47 +64,59 @@ async function findSwfFiles(dir, baseDir) {
   for (const entry of entries) {
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) {
-      results.push(...(await findSwfFiles(full, baseDir)));
-    } else if (entry.isFile() && /\.swf$/i.test(entry.name)) {
-      results.push(path.relative(baseDir, full));
+      results.push(...(await findFiles(full, baseDir, exts)));
+    } else if (entry.isFile()) {
+      const ext = path.extname(entry.name).toLowerCase();
+      if (exts.includes(ext)) results.push(path.relative(baseDir, full));
     }
   }
   return results;
 }
 
 async function main() {
-  const metadata = await readMetadata();
-  const files = await findSwfFiles(ARSIV_DIR, ARSIV_DIR);
-  files.sort((a, b) => a.localeCompare(b, "tr-TR"));
+  const manifest = { generatedAt: new Date().toISOString(), categories: {} };
+  let total = 0;
 
-  const items = await Promise.all(
-    files.map(async (rel) => {
-      const posixRel = rel.split(path.sep).join("/");
-      const meta = metadata[posixRel] || metadata[path.basename(posixRel)] || {};
-      let size = 0;
-      try {
-        size = (await fs.stat(path.join(ARSIV_DIR, rel))).size;
-      } catch {}
-      return {
-        // arsiv köküne göre yol (URL için de kullanılır)
-        file: posixRel,
-        // web sayfasında gösterilecek yol (repo köküne göre)
-        path: "arsiv/" + posixRel,
-        title: meta.title || titleFromFilename(path.basename(posixRel)),
-        description: meta.description || "",
-        size,
-      };
-    })
-  );
+  for (const cat of CATEGORIES) {
+    const catDir = path.join(ARSIV_DIR, cat.key);
+    const metadata = await readMetadata(catDir);
+    const files = await findFiles(catDir, catDir, cat.exts);
+    files.sort((a, b) => a.localeCompare(b, "tr-TR"));
 
-  const manifest = {
-    generatedAt: new Date().toISOString(),
-    count: items.length,
-    items,
-  };
+    const items = await Promise.all(
+      files.map(async (rel) => {
+        const posixRel = rel.split(path.sep).join("/");
+        const meta =
+          metadata[posixRel] || metadata[path.basename(posixRel)] || {};
+        let size = 0;
+        try {
+          size = (await fs.stat(path.join(catDir, rel))).size;
+        } catch {}
+        return {
+          // arsiv köküne göre yol: "swf/dosya.swf"
+          file: cat.key + "/" + posixRel,
+          // repo köküne göre yol: "arsiv/swf/dosya.swf"
+          path: "arsiv/" + cat.key + "/" + posixRel,
+          title: meta.title || titleFromFilename(path.basename(posixRel)),
+          description: meta.description || "",
+          size,
+        };
+      })
+    );
+
+    manifest.categories[cat.key] = {
+      key: cat.key,
+      label: cat.label,
+      kind: cat.kind,
+      count: items.length,
+      items,
+    };
+    total += items.length;
+    console.log(`  ${cat.key.padEnd(5)}: ${items.length} dosya`);
+  }
 
   await fs.writeFile(OUTPUT, JSON.stringify(manifest, null, 2) + "\n", "utf8");
-  console.log(`swfs.json olusturuldu: ${items.length} SWF dosyasi bulundu.`);
+  console.log(`manifest.json olusturuldu — toplam ${total} icerik.`);
 }
 
 main().catch((err) => {

@@ -47,7 +47,11 @@ kısıtlaması olan yerel `file://` açılışlarında bile çalışır. Manifes
 ## Özellikler
 
 - 🗂️ **Kategoriler** — SWF, GIF ve Foto ayrı klasörlerde ve ayrı galerilerde.
-- 📼 **Eklentisiz Flash** — SWF'ler Ruffle ile, döngüde oynatılır.
+- 📼 **Eklentisiz Flash** — SWF'ler Ruffle ile, döngüde oynatılır. Galeride bir
+  içeriğe tıklandığında sayfa içi oynatıcıda (modal) açılır; bu tıklama bir
+  kullanıcı etkileşimi sayıldığı için **ses de anında başlar** (tarayıcılar
+  sesli otomatik oynatmayı yalnızca bir etkileşimden sonra izin verir).
+- 🎲 **Rastgele!** — ana sayfadaki düğme, tüm arşivlerden rastgele bir içeriği açar.
 - 🎞️ **GIF & Foto** — görseller tam sayfa görüntülenir; GIF'ler doğal olarak döner.
 - 📱 **Responsive & mobil uyumlu** — içerik adı en üstte, içerik tam sayfa altta.
 - 🔗 **Bağımsız paylaşım** — her içeriğin kendi bağlantısı vardır, tek tek

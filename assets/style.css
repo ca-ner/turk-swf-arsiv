@@ -127,6 +127,87 @@ img { max-width: 100%; }
   background: rgba(0, 0, 0, 0.5);
 }
 
+/* ---------- Random button ---------- */
+.random-btn {
+  margin-top: 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #221600;
+  background: linear-gradient(180deg, var(--accent-2), var(--accent));
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(255, 157, 47, 0.25);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.random-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(255, 157, 47, 0.35);
+}
+.random-btn:active { transform: translateY(0); }
+.random-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ---------- In-page SWF modal ---------- */
+.swf-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: none;
+  flex-direction: column;
+  background: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(4px);
+}
+.swf-modal.open { display: flex; }
+.swf-modal-bar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elev);
+}
+.swf-modal-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-weight: 600;
+  font-size: clamp(1rem, 3.2vw, 1.3rem);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.swf-modal-controls {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 8px;
+}
+.swf-modal-stage {
+  flex: 1 1 auto;
+  min-height: 0;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.swf-modal-stage ruffle-player,
+.swf-modal-stage ruffle-embed {
+  width: 100% !important;
+  height: 100% !important;
+}
+.swf-modal-msg {
+  color: var(--text-dim);
+  padding: 24px;
+  text-align: center;
+}
+
 /* ---------- Copyright notice (home) ---------- */
 .copyright-note {
   display: flex;

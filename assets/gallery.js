@@ -38,6 +38,18 @@
       (isImage ? "viewer.html?file=" : "player.html?file=") +
       encodeURIComponent(item.file);
 
+    // SWF'ler sayfa içi oynatıcıda (modal) açılır: kart tıklaması bir kullanıcı
+    // etkileşimi olduğundan ses anında başlar. Yeni sekme/paylaşım için href korunur.
+    if (!isImage) {
+      a.addEventListener("click", function (e) {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button === 1) return;
+        if (window.ArsivModal) {
+          e.preventDefault();
+          window.ArsivModal.openSwf(item.file, item.title);
+        }
+      });
+    }
+
     const thumb = document.createElement("div");
     thumb.className = "thumb" + (isImage ? " image" : "");
 

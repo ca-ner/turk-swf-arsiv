@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Oynatıcı — SWF Arşivi</title>
+    <meta name="theme-color" content="#171a21" />
+    <link rel="stylesheet" href="assets/style.css" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%92%BE%3C/text%3E%3C/svg%3E"
+    />
+  </head>
+  <body class="player-page">
+    <!-- İçerik adı en üstte -->
+    <header class="player-header">
+      <a class="back" href="index.html" title="Arşive dön">
+        <span aria-hidden="true">←</span><span class="label">Arşiv</span>
+      </a>
+      <div class="title-wrap">
+        <h1 id="title">Yükleniyor…</h1>
+      </div>
+      <div class="controls">
+        <span class="icon-btn" id="loopBadge" title="İçerik döngüde oynatılır" aria-hidden="true">
+          <span>🔁</span><span class="label">Döngü</span>
+        </span>
+        <button class="icon-btn" id="replayBtn" type="button" title="Baştan oynat">
+          <span aria-hidden="true">↻</span><span class="label">Baştan</span>
+        </button>
+        <button class="icon-btn" id="fsBtn" type="button" title="Tam ekran">
+          <span aria-hidden="true">⛶</span><span class="label">Tam ekran</span>
+        </button>
+        <button class="icon-btn primary" id="shareBtn" type="button" title="Paylaş">
+          <span aria-hidden="true">↗</span><span class="label">Paylaş</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Paylaşım satırı -->
+    <div class="share-row" id="shareRow">
+      <input id="shareUrl" type="text" readonly aria-label="Paylaşım bağlantısı" />
+      <button class="icon-btn primary" id="copyBtn" type="button">Kopyala</button>
+    </div>
+
+    <!-- İçerik tam sayfa -->
+    <div class="stage" id="stage">
+      <div class="stage-message" id="stageMsg">
+        <div class="spinner"></div>
+        <div>İçerik yükleniyor…</div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="ruffle/ruffle.js"></script>
+    <script src="assets/player.js" defer></script>
+  </body>
+</html>

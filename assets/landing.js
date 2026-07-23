@@ -102,7 +102,40 @@
     grid.appendChild(frag);
   }
 
+  // "Rastgele!" — tüm arşivlerden rastgele bir içeriğe götürür.
+  // Bu bir kullanıcı tıklaması olduğu için SWF'ler modalde sesle birlikte başlar.
+  function setupRandom(cats) {
+    const btn = document.getElementById("randomBtn");
+    if (!btn) return;
+    const pool = [];
+    Object.keys(cats).forEach((key) => {
+      const cat = cats[key];
+      (cat.items || []).forEach((it) =>
+        pool.push({ item: it, kind: cat.kind })
+      );
+    });
+    if (!pool.length) {
+      btn.disabled = true;
+      return;
+    }
+    btn.addEventListener("click", function () {
+      const pick = pool[Math.floor(Math.random() * pool.length)];
+      if (pick.kind === "swf" && window.ArsivModal) {
+        window.ArsivModal.openSwf(pick.item.file, pick.item.title);
+      } else {
+        location.href =
+          (pick.kind === "swf" ? "player.html?file=" : "viewer.html?file=") +
+          encodeURIComponent(pick.item.file);
+      }
+    });
+  }
+
   getManifest()
-    .then((m) => renderAll((m && m.categories) || {}))
+    .then((m) => {
+      const cats = (m && m.categories) || {};
+      renderAll(cats);
+      setupRandom(cats);
+    })
     .catch(() => renderAll({}));
 })();
+

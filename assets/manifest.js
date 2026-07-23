@@ -1,6 +1,6 @@
 // Otomatik üretildi — elle düzenlemeyin. Kaynak: scripts/generate-manifest.mjs
 window.ARSIV_MANIFEST = {
-  "generatedAt": "2026-07-23T14:11:17.443Z",
+  "generatedAt": "2026-07-23T15:11:25.855Z",
   "categories": {
     "swf": {
       "key": "swf",

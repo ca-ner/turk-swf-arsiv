@@ -34,13 +34,17 @@
     const a = document.createElement("a");
     a.className = "card";
     const isImage = kind === "image";
+    const isMht = kind === "mht";
     a.href =
-      (isImage ? "viewer.html?file=" : "player.html?file=") +
-      encodeURIComponent(item.file);
+      (isImage
+        ? "viewer.html?file="
+        : isMht
+        ? "mht.html?file="
+        : "player.html?file=") + encodeURIComponent(item.file);
 
     // SWF'ler sayfa içi oynatıcıda (modal) açılır: kart tıklaması bir kullanıcı
     // etkileşimi olduğundan ses anında başlar. Yeni sekme/paylaşım için href korunur.
-    if (!isImage) {
+    if (kind === "swf") {
       a.addEventListener("click", function (e) {
         if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button === 1) return;
         if (window.ArsivModal) {
@@ -64,6 +68,11 @@
       badge.className = "badge";
       badge.textContent = extOf(item.file);
       thumb.appendChild(badge);
+    } else if (isMht) {
+      const glyph = document.createElement("div");
+      glyph.className = "doc-glyph";
+      glyph.textContent = "💬";
+      thumb.appendChild(glyph);
     } else {
       const glyph = document.createElement("div");
       glyph.className = "play-glyph";

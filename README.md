@@ -14,7 +14,7 @@ emülatörü) kullanılır ve `ruffle/` klasöründe **kendi sunucumuzda barınd
 
 Site iki katmanlıdır:
 
-1. **Ana sayfa** (`index.html`) — kategori seçimi: **SWF**, **GIF**, **Foto**.
+1. **Ana sayfa** (`index.html`) — kategori seçimi: **SWF**, **GIF**, **Foto**, **Forum**.
 2. **Kategori galerileri** — her kategori kendi galerisine sahiptir ve içeriği
    ayrı bir klasörden okur.
 
@@ -23,14 +23,17 @@ index.html          Ana sayfa (kategori seçimi)
 swf.html            SWF galerisi        →  arsiv/swf/
 gif.html            GIF galerisi        →  arsiv/gif/
 foto.html           Foto galerisi       →  arsiv/foto/
+forum.html          Forum galerisi      →  arsiv/forum_thg_tr/
 player.html         SWF oynatıcı (Ruffle)   ?file=swf/<dosya>
 viewer.html         GIF/Foto görüntüleyici  ?file=gif|foto/<dosya>
+mht.html            Forum (.mht) görüntüleyici  ?file=forum_thg_tr/<dosya>
 assets/             CSS ve JavaScript
 ruffle/             Kendi sunucumuzda barındırılan Ruffle motoru (WASM)
 arsiv/
   ├── swf/          .swf dosyaları
   ├── gif/          .gif dosyaları
-  └── foto/         .jpg, .jpeg, .png, .webp, .avif, .bmp
+  ├── foto/         .jpg, .jpeg, .png, .webp, .avif, .bmp
+  └── forum_thg_tr/ .mht / .mhtml (arşivlenmiş forum sayfaları)
 manifest.json       Otomatik üretilen içerik listesi (tüm kategoriler)
 assets/manifest.js  Aynı listenin <script> ile gömülen sürümü (otomatik)
 scripts/            Manifest üreticisi
@@ -56,6 +59,10 @@ kısıtlaması olan yerel `file://` açılışlarında bile çalışır. Manifes
   içeriğe geçer (aynı kategori içinde; başa/sona gelince döner). SWF modalinde,
   GIF/Foto görüntüleyicisinde ve paylaşılan oynatıcı sayfasında geçerlidir.
 - 🎞️ **GIF & Foto** — görseller tam sayfa görüntülenir; GIF'ler doğal olarak döner.
+- 💬 **Forum (.mht)** — arşivlenmiş forum sayfaları (MHTML). Tarayıcılar `.mht`
+  dosyalarını doğrudan açmadığı için içerik istemci tarafında çözümlenir (MIME
+  multipart parçalara ayrılıp gömülü görsel/CSS `data:` URI olarak gömülür) ve
+  altta ayrı, sandbox'lı bir çerçevede (iframe) gösterilir.
 - 📱 **Responsive & mobil uyumlu** — içerik adı en üstte, içerik tam sayfa altta.
 - 🔗 **Bağımsız paylaşım** — her içeriğin kendi bağlantısı vardır, tek tek
   paylaşılabilir (`player.html?file=…` veya `viewer.html?file=…`).

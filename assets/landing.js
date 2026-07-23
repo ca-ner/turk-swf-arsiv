@@ -10,6 +10,7 @@
     { key: "swf", emoji: "📼", label: "SWF", href: "swf.html", desc: "Flash animasyonları ve mini oyunlar" },
     { key: "gif", emoji: "🎞️", label: "GIF", href: "gif.html", desc: "Hareketli GIF'ler" },
     { key: "foto", emoji: "🖼️", label: "Foto", href: "foto.html", desc: "Fotoğraflar ve görseller" },
+    { key: "forum_thg_tr", emoji: "💬", label: "Forum", href: "forum.html", desc: "Arşivlenmiş forum sayfaları (.mht)" },
   ];
 
   function getManifest() {
@@ -60,9 +61,22 @@
     return glyph;
   }
 
+  function docThumb(emoji) {
+    const glyph = document.createElement("div");
+    glyph.className = "doc-glyph";
+    glyph.textContent = emoji || "💬";
+    return glyph;
+  }
+
   function card(def, cat) {
     const items = (cat && cat.items) || [];
-    const kind = cat ? cat.kind : def.key === "swf" ? "swf" : "image";
+    const kind = cat
+      ? cat.kind
+      : def.key === "swf"
+      ? "swf"
+      : def.key === "forum_thg_tr"
+      ? "mht"
+      : "image";
     const count = cat ? cat.count : 0;
 
     const a = document.createElement("a");
@@ -72,6 +86,7 @@
     const thumb = document.createElement("div");
     thumb.className = "thumb" + (kind === "image" ? " image" : "");
     if (kind === "image") thumb.appendChild(imageThumb(items));
+    else if (kind === "mht") thumb.appendChild(docThumb(def.emoji));
     else thumb.appendChild(swfThumb());
 
     const emoji = document.createElement("span");
@@ -122,11 +137,15 @@
       const pick = pool[Math.floor(Math.random() * pool.length)];
       if (pick.kind === "swf" && window.ArsivModal) {
         window.ArsivModal.openSwf(pick.item.file, pick.item.title);
-      } else {
-        location.href =
-          (pick.kind === "swf" ? "player.html?file=" : "viewer.html?file=") +
-          encodeURIComponent(pick.item.file);
+        return;
       }
+      const page =
+        pick.kind === "swf"
+          ? "player.html?file="
+          : pick.kind === "mht"
+          ? "mht.html?file="
+          : "viewer.html?file=";
+      location.href = page + encodeURIComponent(pick.item.file);
     });
   }
 

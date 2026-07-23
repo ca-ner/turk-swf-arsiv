@@ -33,6 +33,12 @@ const CATEGORIES = [
     kind: "image",
     exts: [".jpg", ".jpeg", ".png", ".webp", ".avif", ".bmp"],
   },
+  {
+    key: "forum_thg_tr",
+    label: "Forum",
+    kind: "mht",
+    exts: [".mht", ".mhtml"],
+  },
 ];
 
 // Dosya adından okunabilir başlık: "kirmizi_top-2.swf" -> "Kirmizi Top 2"

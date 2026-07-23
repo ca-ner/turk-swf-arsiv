@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>SWF Arşivi — Flash İçerik Koleksiyonu</title>
+    <meta
+      name="description"
+      content="Eski Flash (SWF) içeriklerini tarayıcıda, eklenti gerektirmeden oynatan statik arşiv."
+    />
+    <meta name="theme-color" content="#0f1115" />
+    <meta property="og:title" content="SWF Arşivi" />
+    <meta property="og:description" content="Eski Flash içeriklerini tarayıcıda yeniden oynatın." />
+    <meta property="og:type" content="website" />
+    <link rel="stylesheet" href="assets/style.css" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%92%BE%3C/text%3E%3C/svg%3E"
+    />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container">
+        <h1><span class="flash">⚡</span> SWF Arşivi</h1>
+        <p>Eski Flash içeriklerini tarayıcıda, eklenti olmadan yeniden oynatın.</p>
+      </div>
+    </header>
+
+    <main class="container">
+      <div class="toolbar">
+        <div class="search">
+          <input
+            id="search"
+            type="search"
+            placeholder="Arşivde ara…"
+            autocomplete="off"
+            aria-label="Arşivde ara"
+          />
+        </div>
+        <span class="count-pill" id="count"></span>
+      </div>
+
+      <div class="grid" id="grid" hidden></div>
+
+      <div class="empty" id="empty" hidden>
+        <h2>Henüz içerik yok</h2>
+        <p>
+          <code>arsiv/</code> klasörüne <code>.swf</code> dosyalarını ekleyin,
+          değişiklikleri gönderin; liste otomatik güncellenir.
+        </p>
+      </div>
+
+      <div class="empty" id="error" hidden>
+        <h2>Liste yüklenemedi</h2>
+        <p><code>swfs.json</code> bulunamadı. Manifesti oluşturmak için
+          <code>node scripts/generate-manifest.mjs</code> komutunu çalıştırın.</p>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        Oynatma motoru: <a href="https://ruffle.rs" rel="noopener" target="_blank">Ruffle</a>
+        (kendi sunucumuzda barındırılıyor) · Statik olarak GitHub Pages üzerinde çalışır.
+      </div>
+    </footer>
+
+    <script src="assets/gallery.js" defer></script>
+  </body>
+</html>
